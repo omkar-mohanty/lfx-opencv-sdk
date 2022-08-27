@@ -8,5 +8,6 @@ edition = "2021"
 bindgen = "0.53.1"
 pkg-config = "0.3.25"
 cxx-build="1.0"
+cc = "1.0.73"
 [dependencies]
 cxx = "1.0"

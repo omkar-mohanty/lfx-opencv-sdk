@@ -1,6 +1,7 @@
-use cxx::let_cxx_string;
-use opencv_rs::ffi::imread_cpp;
+use std::path::PathBuf;
+
+use opencv_rs::imread_wrapper;
 fn main() {
-    let_cxx_string!(s="./");
-    imread_cpp(&s, 1);
+    let path = PathBuf::new();
+   imread_wrapper(path); 
 }

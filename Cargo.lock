@@ -278,6 +278,7 @@ name = "opencv_rs"
 version = "0.1.0"
 dependencies = [
  "bindgen",
+ "cc",
  "cxx",
  "cxx-build",
  "pkg-config",

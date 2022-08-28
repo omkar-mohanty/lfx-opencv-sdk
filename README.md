@@ -34,6 +34,10 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```shell
 cargo install bindgen
 ```
+## Running tests
+```shell
+cargo test test_wrapper
+```
 ## Running the demo
 The demo reads an image from the crate folder.
 ```shell

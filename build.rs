@@ -1,21 +1,19 @@
 extern crate bindgen;
 extern crate pkg_config;
-extern crate cc;
 use std::{env, path::PathBuf};
 
 fn main() {
-    cc::Build::new()
-        .cpp(true)
-        .include("/usr/include/opencv4")
-        .file("./cv.hpp")
-        .compile("cv.a");
-        
+    let lib = pkg_config::probe_library("opencv4").unwrap();
+
+    lib.ld_args
+        .iter()
+        .for_each(|args| {
+            args.iter()
+                .for_each(|link| println!("cargo-rustc-link-lib={}",link))
+        });
 
     let bindings = bindgen::Builder::default()
-        .clang_arg("-I/usr/include/opencv4")
-        .clang_arg("-x").clang_arg("c++")
-        .clang_arg("-std=c++14")
-        .clang_arg("-I./")
+        .clang_args(["-I/usr/include/opencv4", "-x", "c++", "-std=c++14"])
         .opaque_type("std::.*")
         .enable_cxx_namespaces()
         .whitelist_type("cv::Mat")
@@ -28,5 +26,5 @@ fn main() {
 
     bindings
         .write_to_file(out_path.join("bindings.rs"))
-        .expect("Couldnt write bindings"); 
+        .expect("Couldnt write bindings");
 }

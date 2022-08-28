@@ -2,6 +2,6 @@ use std::path::PathBuf;
 
 use opencv_rs::imread_wrapper;
 fn main() {
-    let path = PathBuf::new();
-   imread_wrapper(path); 
+    let path = PathBuf::from("./catto.jpg");
+    imread_wrapper(path).unwrap();
 }

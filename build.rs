@@ -5,12 +5,10 @@ use std::{env, path::PathBuf};
 fn main() {
     let lib = pkg_config::probe_library("opencv4").unwrap();
 
-    lib.ld_args
-        .iter()
-        .for_each(|args| {
-            args.iter()
-                .for_each(|link| println!("cargo-rustc-link-lib={}",link))
-        });
+    lib.ld_args.iter().for_each(|args| {
+        args.iter()
+            .for_each(|link| println!("cargo-rustc-link-lib={}", link))
+    });
 
     let bindings = bindgen::Builder::default()
         .clang_args(["-I/usr/include/opencv4", "-x", "c++", "-std=c++14"])

@@ -4,19 +4,19 @@
 
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 use root::cv::{imread, Mat};
+use std::error::Error;
 use std::fmt::Display;
 use std::path::PathBuf;
-use std::error::Error;
 
 #[derive(Debug)]
-struct CvError{
-    message: String
+struct CvError {
+    message: String,
 }
 
 impl CvError {
     pub fn new(message: &str) -> Self {
         CvError {
-            message: String::from(message)
+            message: String::from(message),
         }
     }
 }
@@ -27,21 +27,20 @@ impl Display for CvError {
     }
 }
 
-impl Error for CvError{} 
+impl Error for CvError {}
 
-
-
-pub fn imread_wrapper(path: PathBuf) -> Result<Mat,Box<dyn Error>> {
+/// Wrapper function for imread(std::string, int) to make it safe to use in rust memory model
+pub fn imread_wrapper(path: PathBuf, flag: i32) -> Result<Mat, Box<dyn Error>> {
     if !path.exists() {
-        return Err(Box::new(CvError::new("Image Does not exist"))) 
+        return Err(Box::new(CvError::new("Image Does not exist")));
     }
-    
+
     let mat: Mat;
 
     let path = path.to_str().unwrap().as_ptr() as *const [u64; 4usize];
 
     unsafe {
-        mat = imread(path, 1);
+        mat = imread(path, flag);
     }
 
     Ok(mat)
@@ -52,8 +51,26 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_wrapper() {
+    fn test_wrapper_empty() -> Result<(), Box<dyn Error>> {
         let path = PathBuf::new();
-        imread_wrapper(path);
+
+        if let Err(_) = imread_wrapper(path, 1) {
+            return Ok(());
+        }
+
+        panic!("Empty path must be handled")
+    }
+
+    #[test]
+    fn test_wrapper() -> Result<(), Box<dyn Error>> {
+        let path = std::env::current_dir().unwrap();
+        println!("{}", path.to_str().unwrap());
+        let path = PathBuf::from("./catto.jpg");
+
+        if let Err(msg) = imread_wrapper(path, 1) {
+            return Err(msg)
+        }
+
+        Ok(())
     }
 }
